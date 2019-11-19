@@ -4,8 +4,10 @@ Kafka streams demo application for kotlin
 ## Internal topics
 
 Running kafka streams may create internal intermediary topics. They are of 2 types
-    1. **Repartitioning topics** - In case you start transforming the key of your stream, a repartitioning will happen at some processor.
-    2. **Changelog topics** - In case you perform aggregations, Kafka streams will save compacted data in these topics.
+
+1. **Repartitioning topics** - In case you start transforming the key of your stream, a repartitioning will happen at some processor.
+
+2. **Changelog topics** - In case you perform aggregations, Kafka streams will save compacted data in these topics.
     
 Internal topics are
 
