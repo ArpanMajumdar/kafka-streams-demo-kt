@@ -1,14 +1,12 @@
 package com.arpan.kafka.favoritecolor
 
+import com.arpan.kafka.KafkaStreamsUtil
 import org.apache.kafka.common.serialization.Serdes
-import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.kstream.Produced
 import org.slf4j.LoggerFactory
 import java.util.*
-import java.util.concurrent.CountDownLatch
-import kotlin.system.exitProcess
 
 class FavoriteColor(
     private val inputTopic: String,
@@ -37,25 +35,6 @@ class FavoriteColor(
     fun start() {
         colorsByUserId.to(intermediateTopic, Produced.with(Serdes.String(), Serdes.String()))
         colorsGrouped.toStream().to(outputTopic, Produced.with(Serdes.String(), Serdes.Long()))
-
-        val kafkaStreams = KafkaStreams(streamsBuilder.build(), properties)
-
-        // Shutdown hook
-        val countDownLatch = CountDownLatch(1)
-        Runtime.getRuntime().addShutdownHook(Thread
-        {
-            kafkaStreams.close()
-            countDownLatch.countDown()
-        })
-
-        // Start kafka streams
-        try {
-            kafkaStreams.start()
-            countDownLatch.await()
-        } catch (ex: Exception) {
-            println("Error occurred")
-            println(ex.printStackTrace())
-            exitProcess(-1)
-        }
+        KafkaStreamsUtil(streamsBuilder, properties).start()
     }
 }

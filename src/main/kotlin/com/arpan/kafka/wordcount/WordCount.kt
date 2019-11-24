@@ -1,5 +1,6 @@
 package com.arpan.kafka.wordcount
 
+import com.arpan.kafka.KafkaStreamsUtil
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsBuilder
@@ -23,26 +24,7 @@ class WordCount(private val inputTopic: String, private val outputTopic: String,
 
     fun start() {
         wordCounts.toStream().to(outputTopic, Produced.with(Serdes.String(), Serdes.Long()))
-
-        val kafkaStreams = KafkaStreams(streamsBuilder.build(), properties)
-
-        // Shutdown hook
-        val countDownLatch = CountDownLatch(1)
-        Runtime.getRuntime().addShutdownHook(Thread
-        {
-            kafkaStreams.close()
-            countDownLatch.countDown()
-        })
-
-        // Start kafka streams
-        try {
-            kafkaStreams.start()
-            countDownLatch.await()
-        } catch (ex: Exception) {
-            println("Error occurred")
-            println(ex.printStackTrace())
-            exitProcess(-1)
-        }
+        KafkaStreamsUtil(streamsBuilder,properties).start()
     }
 
 }
