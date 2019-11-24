@@ -168,3 +168,24 @@ stream.to("intermediate-topic")
 val table: <String, Long> = builder.table("intermediate-topic")
 ```
 
+## KTable GroupBy
+
+- GroupBy allows you to perform more aggregations within a KTable.
+- It triggers a repartition as the key changes.
+
+```kotlin
+val groupedTable: KGroupedTable<String, Int> =
+    table.groupBy { key, value -> KeyValue.pair(value, value.length) }
+```
+
+## KGroupedStream/KGroupedTable Count
+
+- As a reminder, KGroupedStream are obtained after a `groupBy()/groupByKey()` call on KStream.
+- `count` counts the number of records by frouped key.
+- If used on `KGroupedStream`
+    - Null keys or values are ignored.
+- If used on `KGroupedTable`
+    - Null keys are ignored
+    - Null values are treated as delete(tombstone)
+    
+
